@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Drive Direct Link Generator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #e8f0f2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+        input[type="text"] {
+            width: calc(100% - 24px);
+            padding: 14px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 14px 24px;
+            margin: 10px 5px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: #ffffff;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .output {
+            margin-top: 20px;
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .message {
+            color: #28a745;
+            margin-top: 10px;
+            display: none;
+            font-size: 14px;
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+        footer a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Google Drive Direct Link Generator</h2>
+        <label for="gdrive-link">Enter Google Drive Shareable Link:</label>
+        <input type="text" id="gdrive-link" placeholder="https://drive.google.com/file/d/FILE_ID/view?usp=sharing">
+        <div class="button-group">
+            <button onclick="generateDirectLink()">Generate Direct Link</button>
+            <button onclick="clearFields()">Clear</button>
+            <button onclick="pasteFromClipboard()">Paste</button>
+        </div>
+        <div class="output">
+            <label for="direct-link">Direct Download Link:</label>
+            <input type="text" id="direct-link" readonly>
+            <div class="button-group">
+                <button onclick="copyToClipboard()">Copy</button>
+                <button onclick="openInNewTab()">Open in New Tab</button>
+            </div>
+        </div>
+        <div class="message" id="copy-message">Copied!</div>
+    </div>
+    <footer>
+        Powered by <a href="#">Falendra Sahu ❤️</a>
+    </footer>
+
+    <script>
+        function generateDirectLink() {
+            const inputLink = document.getElementById('gdrive-link').value;
+            const directLinkField = document.getElementById('direct-link');
+            const fileIdMatch = inputLink.match(/\/d\/(.*?)\//);
+            if (fileIdMatch && fileIdMatch[1]) {
+                const fileId = fileIdMatch[1];
+                const directLink = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                directLinkField.value = directLink;
+            } else {
+                directLinkField.value = 'Invalid Google Drive link';
+            }
+        }
+
+        function clearFields() {
+            document.getElementById('gdrive-link').value = '';
+            document.getElementById('direct-link').value = '';
+            document.getElementById('copy-message').style.display = 'none';
+        }
+
+        function copyToClipboard() {
+            const directLinkField = document.getElementById('direct-link');
+            directLinkField.select();
+            document.execCommand('copy');
+            const copyMessage = document.getElementById('copy-message');
+            copyMessage.style.display = 'block';
+            setTimeout(() => {
+                copyMessage.style.display = 'none';
+            }, 2000);
+        }
+
+        function openInNewTab() {
+            const directLink = document.getElementById('direct-link').value;
+            if (directLink && directLink !== 'Invalid Google Drive link') {
+                window.open(directLink, '_blank');
+            } else {
+                alert('Invalid Google Drive link');
+            }
+        }
+
+        async function pasteFromClipboard() {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById('gdrive-link').value = text;
+            } catch (err) {
+                alert('Failed to read clipboard contents: ' + err);
+            }
+        }
+    </script>
+</body>
+</html>
